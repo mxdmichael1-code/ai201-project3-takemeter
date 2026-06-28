@@ -45,24 +45,61 @@ Examples:
 
 Hard Edge Cases
 
-The most difficult reviews are those that combine emotion with concrete information.
 
-Example:
+Case 1
 
-“Amazing food but the service was painfully slow.”
+Review:
 
-This review could be interpreted as either emotional_reaction because of the enthusiastic language or specific_feedback because it provides actionable information about both food quality and service speed.
+“The food was amazing but the service was painfully slow.”
 
-Decision rule:
+Possible labels:
 
-If the review contains at least one concrete observation that could help another customer or help the restaurant improve, it will be labeled specific_feedback. Emotional wording alone does not change the label.
+* specific_feedback
+* emotional_reaction
 
-Another difficult example is:
+Final label:
+specific_feedback
+
+Reason:
+Although the review contains emotional wording (“amazing”), it also provides concrete and actionable information about the service being slow. According to my labeling rules, reviews with specific details take priority over emotional expression.
+
+⸻
+
+Case 2
+
+Review:
 
 “The food was good.”
 
-Although food is mentioned, there is no explanation of why it was good, so this will be labeled general_opinion rather than specific_feedback.
+Possible labels:
 
+* specific_feedback
+* general_opinion
+
+Final label:
+general_opinion
+
+Reason:
+The review mentions food, but it does not explain what was good about it. Since there are no concrete details that would help another customer or the restaurant, I classified it as a general opinion.
+
+⸻
+
+Case 3
+
+Review:
+
+“Worst experience ever. Never coming back.”
+
+Possible labels:
+
+* general_opinion
+* emotional_reaction
+
+Final label:
+emotional_reaction
+
+Reason:
+Although the review expresses an overall opinion, its primary purpose is to communicate strong frustration rather than provide an evaluation or specific feedback. Therefore, it is best categorized as an emotional reaction.
 ⸻
 
 Data Collection Plan
