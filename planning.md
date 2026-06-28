@@ -42,26 +42,24 @@ Examples:
 * “Worst place ever. Never coming back.”
 
 ⸻
-
-Hard Edge Cases
-
+Additional Difficult Labeling Cases
 
 Case 1
 
 Review:
 
-“The food was amazing but the service was painfully slow.”
+“The fries were great too.”
 
 Possible labels:
 
 * specific_feedback
-* emotional_reaction
+* general_opinion
 
 Final label:
 specific_feedback
 
 Reason:
-Although the review contains emotional wording (“amazing”), it also provides concrete and actionable information about the service being slow. According to my labeling rules, reviews with specific details take priority over emotional expression.
+Although the review is short, it refers to a specific menu item (“fries”). My decision rule is that mentioning a concrete aspect of the meal counts as specific feedback, even if the explanation is brief.
 
 ⸻
 
@@ -69,18 +67,18 @@ Case 2
 
 Review:
 
-“The food was good.”
+“All I have to say is the food was amazing!!!”
 
 Possible labels:
 
 * specific_feedback
-* general_opinion
+* emotional_reaction
 
 Final label:
-general_opinion
+emotional_reaction
 
 Reason:
-The review mentions food, but it does not explain what was good about it. Since there are no concrete details that would help another customer or the restaurant, I classified it as a general opinion.
+The review mentions food but gives no concrete details about taste, texture, or quality. Its main purpose is to express excitement, so I labeled it as an emotional reaction.
 
 ⸻
 
@@ -88,18 +86,18 @@ Case 3
 
 Review:
 
-“Worst experience ever. Never coming back.”
+“Service was a little slow.”
 
 Possible labels:
 
+* specific_feedback
 * general_opinion
-* emotional_reaction
 
 Final label:
-emotional_reaction
+specific_feedback
 
 Reason:
-Although the review expresses an overall opinion, its primary purpose is to communicate strong frustration rather than provide an evaluation or specific feedback. Therefore, it is best categorized as an emotional reaction.
+Even though the review is short, it provides a specific and actionable observation about the speed of service, making it more informative than a general opinion.
 ⸻
 
 Data Collection Plan
