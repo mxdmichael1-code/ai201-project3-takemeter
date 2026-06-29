@@ -168,28 +168,191 @@ This baseline provides a reference point for determining whether task-specific f
 
 ⸻
 
-Evaluation Results
+# Evaluation Results
 
-Overall Accuracy
+## Overall Accuracy
 
-Model	Accuracy
-Zero-shot Baseline	0.533
-Fine-tuned DistilBERT	0.533
+| Model | Accuracy |
+|-------|---------:|
+| Zero-shot Baseline | **0.533** |
+| Fine-tuned DistilBERT | **0.533** |
 
-Although the overall accuracy remained unchanged, the two models behaved differently at the class level.
+Although the overall accuracy remained unchanged, the two models exhibited different behavior at the class level. While the fine-tuned model did not improve overall accuracy, it shifted its decision boundary and learned some classes better than others.
 
-Per-Class Metrics
+---
 
-Zero-Shot Baseline
+## Per-Class Metrics
 
-Label	Precision	Recall	F1
-specific_feedback	0.57	0.73	0.64
-general_opinion	0.45	0.50	0.48
-emotional_reaction	0.60	0.33	0.43
+### Zero-Shot Baseline
 
-Fine-Tuned DistilBERT
+| Label | Precision | Recall | F1 |
+|------|----------:|-------:|---:|
+| specific_feedback | 0.57 | 0.73 | 0.64 |
+| general_opinion | 0.45 | 0.50 | 0.48 |
+| emotional_reaction | 0.60 | 0.33 | 0.43 |
 
-Label	Precision	Recall	F1
-specific_feedback	0.43	0.91	0.59
-general_opinion	0.50	0.10	0.17
-emotional_reaction	1.00	0.56	0.71
+### Fine-Tuned DistilBERT
+
+| Label | Precision | Recall | F1 |
+|------|----------:|-------:|---:|
+| specific_feedback | 0.43 | 0.91 | 0.59 |
+| general_opinion | 0.50 | 0.10 | 0.17 |
+| emotional_reaction | 1.00 | 0.56 | 0.71 |
+
+Compared with the zero-shot baseline, the fine-tuned model substantially improved performance on the **emotional_reaction** class, increasing its F1 score from **0.43** to **0.71**. However, this came at the expense of **general_opinion**, whose F1 score dropped from **0.48** to **0.17**. The F1 score for **specific_feedback** decreased slightly from **0.64** to **0.59**, while recall increased significantly, indicating that the model predicted this label much more aggressively.
+
+---
+
+## Confusion Matrix
+
+The confusion matrix for the fine-tuned model is shown below.
+
+| True Label | Predicted: specific_feedback | Predicted: general_opinion | Predicted: emotional_reaction |
+|------------|----------------------------:|---------------------------:|------------------------------:|
+| specific_feedback | 10 | 1 | 0 |
+| general_opinion | 9 | 1 | 0 |
+| emotional_reaction | 4 | 0 | 5 |
+
+The most common error was predicting **specific_feedback** for reviews whose true label was **general_opinion**. Out of ten `general_opinion` examples, the model correctly identified only one and classified the remaining nine as `specific_feedback`.
+
+This pattern suggests that the model relied heavily on the presence of restaurant-related terms (such as food, service, or menu items) rather than distinguishing between actionable feedback and an overall opinion. In contrast, the model performed much better at identifying **emotional_reaction**, indicating that emotionally expressive language forms a clearer and more consistent pattern for the classifier to learn.
+
+Overall, these results indicate that the distinction between **general_opinion** and **specific_feedback** remains the primary challenge of this classification task and would likely benefit from more consistent annotation and additional training examples focused on boundary cases.
+⸻
+
+Error Analysis
+
+Error 1
+
+Review
+
+Hopefully this bodes for them going out of business and someone who can cook can come in.
+
+Ground Truth: general_opinion
+
+Prediction: specific_feedback
+
+Confidence: 0.36
+
+Analysis
+
+This review expresses an overall negative opinion with emotional language rather than providing actionable feedback. The model likely focused on the phrase “someone who can cook” and interpreted it as criticism of food quality. This demonstrates that the model tends to associate references to cooking or food with the specific_feedback class, even when the review’s primary purpose is expressing dissatisfaction.
+
+⸻
+
+Error 2
+
+Review
+
+Hands down my favorite Italian restaurant!
+
+Ground Truth: emotional_reaction
+
+Prediction: specific_feedback
+
+Confidence: 0.35
+
+Analysis
+
+This review contains no concrete information about the restaurant. Instead, it communicates enthusiasm. The model appears to have relied on restaurant-related keywords instead of identifying the sentence as an emotional expression. More examples of short enthusiastic reviews during training would likely improve performance.
+
+⸻
+
+Error 3
+
+Review
+
+However, there was so much garlic in the fondue, it was barely edible.
+
+Ground Truth: general_opinion
+
+Prediction: specific_feedback
+
+Confidence: 0.36
+
+Analysis
+
+This example illustrates a limitation of the dataset itself. According to the project definitions, the review contains concrete information about a specific dish and could reasonably be labeled as specific_feedback. In this case, the model’s prediction is understandable despite being counted as incorrect. This highlights how annotation consistency directly affects evaluation metrics.
+
+⸻
+
+Sample Classifications
+
+Review	Predicted Label	Confidence	Notes
+“Service was very prompt.”	specific_feedback	0.91	Correct. The review provides concrete information about service quality.
+“Hands down my favorite Italian restaurant!”	specific_feedback	0.35	Incorrect. The model relied on restaurant-related keywords instead of emotional tone.
+“Will never, ever go back.”	specific_feedback	0.34	Incorrect. The model struggled to distinguish emotional language from general feedback.
+“The fries were crispy and delicious.”	specific_feedback	0.88	Correct. The review discusses a specific menu item and its quality.
+“Worst restaurant ever!”	emotional_reaction	0.82	Correct. The review primarily expresses strong emotion without supporting details.
+
+⸻
+
+Reflection
+
+The original goal of this project was to distinguish between actionable restaurant feedback, overall opinions, and emotional reactions. While the model learned to recognize emotional language reasonably well, it struggled to separate specific feedback from general opinions.
+
+Many restaurant reviews are short and naturally mix these two styles. For example, a sentence such as “The fries were great” mentions a specific menu item but also functions as a simple opinion. Because many training examples shared this ambiguity, the model frequently predicted specific_feedback whenever food or service was mentioned.
+
+Another important observation is that some errors appear to result from annotation rather than model behavior. A few reviews labeled as general_opinion arguably fit the definition of specific_feedback based on the project’s own taxonomy. This suggests that improving annotation consistency could improve model performance more effectively than simply collecting additional training data.
+
+Overall, the project demonstrates that label quality is often more important than model architecture when building supervised classifiers.
+
+⸻
+
+Spec Reflection
+
+The project specification strongly influenced the design of the label taxonomy. Spending time defining mutually exclusive labels before collecting data made the annotation process more consistent and highlighted ambiguous cases early.
+
+One way my implementation diverged from the original plan was the use of preliminary AI-assisted labeling followed by manual review. This significantly reduced annotation time while still allowing me to verify labels and refine ambiguous examples before training.
+
+⸻
+
+AI Usage
+
+Label Design
+
+ChatGPT was used to refine the label taxonomy, identify ambiguous boundary cases, and improve the wording of label definitions. Several initial label definitions were revised after discussing examples that could reasonably belong to multiple categories.
+
+Dataset Preparation
+
+AI was used to generate preliminary labels for the restaurant review dataset using the predefined taxonomy. Every example was manually reviewed before training, and ambiguous cases were adjusted according to the final labeling rules.
+
+Error Analysis
+
+After evaluation, AI was used to identify common patterns among the model’s incorrect predictions. The suggested patterns were then verified manually by examining the confusion matrix and individual misclassified reviews.
+
+⸻
+
+Repository Structure
+
+ai201-project3-takemeter/
+│
+├── planning.md
+├── README.md
+├── takemeter_dataset_200.csv
+├── evaluation_results.json
+├── confusion_matrix.png
+└── notebook.ipynb
+
+⸻
+
+How to Run
+
+1. Clone the repository.
+2. Open the provided Colab notebook.
+3. Upload takemeter_dataset_200.csv.
+4. Run Sections 1–6 of the notebook.
+5. Download the generated evaluation files.
+6. Compare the zero-shot baseline with the fine-tuned DistilBERT model.
+
+⸻
+
+Future Improvements
+
+If this project were extended, I would:
+
+* Collect a larger and more diverse dataset.
+* Improve annotation consistency by involving multiple annotators.
+* Refine the distinction between general_opinion and specific_feedback.
+* Experiment with larger transformer models and confidence calibration.
+* Build a simple web interface that allows users to classify new restaurant reviews interactively.
