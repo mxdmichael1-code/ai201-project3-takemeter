@@ -169,7 +169,29 @@ This baseline provides a reference point for determining whether task-specific f
 ⸻
 
 # Evaluation Results
+## Sample Classifications
 
+| Review | Predicted Label | Confidence | Analysis |
+|--------|-----------------|-----------:|----------|
+| "Service was very prompt." | `specific_feedback` | 0.91 | **Correct.** This review gives concrete information about the quality of the service, which matches the definition of `specific_feedback`. |
+| "Hands down my favorite Italian restaurant!" | `specific_feedback` | 0.35 | **Incorrect.** The model focused on the mention of a restaurant rather than recognizing that the review is primarily expressing enthusiasm. A human would likely classify this as `emotional_reaction`. |
+| "Will never, ever go back." | `specific_feedback` | 0.34 | **Incorrect.** This review contains no actionable details and mainly expresses frustration. The model confused strong emotional language with specific feedback. |
+| "The fries were crispy and delicious." | `specific_feedback` | 0.88 | **Correct.** The review provides concrete information about a specific menu item, making it an appropriate example of `specific_feedback`. |
+| "Worst restaurant ever!" | `emotional_reaction` | 0.82 | **Correct.** The review communicates a strong emotional response without supporting details, matching the intended definition of `emotional_reaction`. |
+
+---
+
+## Reflection
+
+The goal of this project was to distinguish between three different styles of restaurant reviews: reviews that provide actionable feedback, reviews that express a general opinion, and reviews that primarily communicate emotion. Although the fine-tuned model achieved the same overall accuracy as the zero-shot baseline, it learned a noticeably different decision boundary.
+
+The model became much better at identifying **emotional_reaction** reviews, suggesting that strong emotional language is a relatively consistent linguistic pattern that can be learned from a relatively small dataset. However, it struggled to distinguish **general_opinion** from **specific_feedback**. In many cases, the model treated any mention of food, service, or another restaurant-related topic as `specific_feedback`, even when the review functioned mainly as an overall opinion.
+
+This indicates that the model overfit to topic-related keywords instead of learning the higher-level distinction I intended. Rather than identifying whether a review was actionable, it often relied on the presence of restaurant-specific vocabulary. This behavior is also reflected in the confusion matrix, where 9 out of 10 `general_opinion` reviews were misclassified as `specific_feedback`.
+
+Another important observation is that dataset quality influenced the final results. While reviewing the errors, I found several examples whose ground-truth labels could reasonably be interpreted differently under my own label definitions. This suggests that annotation consistency likely limited performance as much as the model itself.
+
+If I were to continue this project, I would refine the definitions of `general_opinion` and `specific_feedback`, collect more examples that explicitly distinguish the two categories, and involve multiple annotators to improve labeling consistency. I believe these improvements would have a greater impact than simply training a larger model.
 ## Overall Accuracy
 
 | Model | Accuracy |
