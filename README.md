@@ -140,6 +140,19 @@ specific_feedback
 The review identifies a specific aspect of the dining experience that could be acted upon by the restaurant.
 
 ⸻
+### Data Source
+
+The original reviews came from the public `Restaurant_Reviews.tsv` dataset in this GitHub repository:
+
+https://github.com/sharmaroshan/Restaurant-Reviews-Analysis/blob/master/Restaurant_Reviews.tsv
+
+I used the first 200 reviews from the dataset as my starting point. The original dataset includes sentiment labels (`Liked`), but I did not use those labels for training. Instead, I relabeled the reviews according to my own TakeMeter taxonomy:
+
+- `specific_feedback`
+- `general_opinion`
+- `emotional_reaction`
+
+_____
 
 Fine-Tuning Setup
 
