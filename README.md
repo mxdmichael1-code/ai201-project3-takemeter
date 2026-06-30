@@ -166,8 +166,7 @@ Hyperparameter	Value
 Epochs	3
 Learning Rate	2e-5
 Batch Size	16
-
-The model was fine-tuned using the Hugging Face Transformers library on Google Colab with a T4 GPU.
+I kept the default training setup of 3 epochs, learning rate 2e-5, and batch size 16 because the dataset was small. Training for too many epochs could easily overfit the 140-example training split, while 2e-5 is a standard conservative learning rate for fine-tuning BERT-style models. The model was fine-tuned using the Hugging Face Transformers library on Google Colab with a T4 GPU.
 
 ⸻
 
